@@ -17,8 +17,13 @@ namespace VVVV.MSKinect.Nodes
 	            Help = "Provides access to a Kinect through the MSKinect API")]
     public class KinectRuntimeNode : IPluginEvaluate, IDisposable
     {
-        [Input("Motor Angle", IsSingle = true,DefaultValue=0.5)]
+        [Input("Motor Angle", IsSingle = true,DefaultValue=0.5, Visibility = PinVisibility.Hidden)]
         IDiffSpread<double> FInAngle;
+
+        //***
+        [Input("Enable Motor", IsSingle = true, DefaultBoolean = false, Visibility = PinVisibility.Hidden)]
+        IDiffSpread<bool> FInEnableMotor;
+        //***
 
         [Input("Index", IsSingle = true)]
         IDiffSpread<int> FInIndex;
@@ -135,7 +140,7 @@ namespace VVVV.MSKinect.Nodes
 
                 if (this.FInAngle.IsChanged || reset)
                 {
-                    if (this.runtime.IsStarted)
+                    if (this.runtime.IsStarted && this.FInEnableMotor[0])
                     {
                         try { this.runtime.Runtime.ElevationAngle = (int)VMath.Map(this.FInAngle[0], 0, 1, this.runtime.Runtime.MinElevationAngle, this.runtime.Runtime.MaxElevationAngle, TMapMode.Clamp); }
                         catch { }
